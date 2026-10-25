@@ -129,6 +129,8 @@ public abstract class CobaltActivity extends BaseCobaltActivity {
   private static final AtomicInteger sRetryCount = new AtomicInteger(0);
 
   private String mStartDeepLink;
+  // Whether this process has already replayed its cold-start deep link.
+  private static boolean sStartDeepLinkReplayed = false;
 
   private Object mBackInvokedCallback;
 
@@ -749,6 +751,18 @@ public abstract class CobaltActivity extends BaseCobaltActivity {
   }
 
   public void onSplashScreenHidden() {
+    // The cold-start deep link is handed to the first page that registers a
+    // listener. TizenTube's userscript reloads that page to apply its user
+    // agent, so the app that finally loads never receives the link and the
+    // video doesn't open. Replay it once, after the real app hides the splash
+    // screen. Warm starts deliver their link from onCreate() instead.
+    if (!sStartDeepLinkReplayed) {
+      sStartDeepLinkReplayed = true;
+      StarboardBridge bridge = getStarboardBridge();
+      if (!TextUtils.isEmpty(mStartDeepLink) && bridge != null) {
+        bridge.handleDeepLink(mStartDeepLink);
+      }
+    }
     mHasHiddenSplashScreen = true;
     unregisterNetworkRecoveryObserver();
   }

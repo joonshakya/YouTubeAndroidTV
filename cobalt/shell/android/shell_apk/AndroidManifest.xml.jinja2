@@ -60,7 +60,7 @@
             android:zygotePreloadName="org.chromium.content_public.app.ZygotePreload"
             {# Always enable debuggable=true for development. This manifest is only used for the development shell (CoAT) and does not affect the production Kimono app. #}
             android:debuggable="true"
-            android:label="{% block application_label %}TizenTube{% endblock %}">
+            android:label="{% block application_label %}YouTube{% endblock %}">
         {# Always enable profileable for development. This manifest is only used for the development shell (CoAT) and does not affect the production Kimono app. #}
         <profileable android:shell="true" android:enabled="true" />
         {% block main_activity %}
@@ -173,6 +173,18 @@
             android:exported="false"
             tools:node="remove">
         </provider>
+        <!-- Firmware YouTube remote buttons launch this original Google component.
+             BaseCobaltActivity reads metadata from the incoming alias itself. -->
+        <activity-alias android:name="com.google.android.apps.youtube.tv.activity.ShellActivity"
+                        android:exported="true"
+                        android:targetActivity="dev.cobalt.app.MainActivity">
+            <meta-data android:name="cobalt.APP_URL" android:value="https://www.youtube.com/tv?additionalDataUrl=http://localhost:8012/apps/YouTube"/>
+            <meta-data android:name="cobalt.ENABLE_SPLASH_SCREEN" android:value="true"/>
+            <meta-data android:name="com.google.android.tv.pip.category" android:value="communication" />
+            <meta-data android:name="cobalt.EVERGREEN_LITE" android:value="false"/>
+            <meta-data android:name="cobalt.ENABLE_FEATURES" android:value="EnablePerfettoSystemTracing"/>
+            <meta-data android:name="android.app.lib_name" android:value="cobalt"/>
+        </activity-alias>
     </application>
     {% block extra_root_definitions %}
     {% endblock %}
