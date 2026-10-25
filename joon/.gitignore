@@ -1,0 +1,11 @@
+work/
+out/
+__pycache__/
+*.apk
+*.dex
+*.so
+*.keystore
+*.jks
+*.pem
+*.key
+.env*
